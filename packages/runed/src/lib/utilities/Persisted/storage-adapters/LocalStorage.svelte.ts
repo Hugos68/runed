@@ -1,5 +1,6 @@
 import { SyncStorageAdapter } from "./StorageAdapter.js";
 import { browser } from "$lib/internal/utils/browser.js";
+import { useEventListener } from "$lib/utilities/useEventListener/useEventListener.svelte.js";
 
 interface LocalStorageOptions<Value> {
 	serialize?: (value: Value) => string;
@@ -10,6 +11,7 @@ class LocalStorage<Value> extends SyncStorageAdapter<Value> {
 	private options: LocalStorageOptions<Value>;
 
 	private key: string;
+	private value = $state() as Value;
 	private serialize = $derived.by(() => this.options.serialize ?? JSON.stringify);
 	private deserialize = $derived.by(() => this.options.deserialize ?? JSON.parse);
 
@@ -17,21 +19,25 @@ class LocalStorage<Value> extends SyncStorageAdapter<Value> {
 		super();
 		this.key = key;
 		this.options = options;
+
+		if ($effect.tracking()) {
+			useEventListener(window, "storage", (e) => {
+				if (e.newValue) {
+					this.set(this.deserialize(e.newValue));
+				}
+			});
+		}
 	}
 
 	get() {
-		if (!browser) {
-			return null;
-		}
-		const stored = localStorage.getItem(this.key);
-		return stored !== null ? this.deserialize(stored) : null;
+		return this.value;
 	}
 
 	set(value: Value) {
-		if (!browser) {
-			return;
+		if (browser) {
+			localStorage.setItem(this.key, this.serialize(value));
 		}
-		localStorage.setItem(this.key, this.serialize(value));
+		this.value = value;
 	}
 
 	has() {
