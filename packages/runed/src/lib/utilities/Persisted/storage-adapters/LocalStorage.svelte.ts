@@ -1,4 +1,4 @@
-import { SyncStorageAdapter } from "./StorageAdapter.js";
+import type { SyncStorageAdapter } from "./StorageAdapter.js";
 import { browser } from "$lib/internal/utils/browser.js";
 import { useEventListener } from "$lib/utilities/useEventListener/useEventListener.svelte.js";
 
@@ -7,7 +7,7 @@ interface LocalStorageOptions<Value> {
 	deserialize?: (value: string) => Value;
 }
 
-class LocalStorage<Value> extends SyncStorageAdapter<Value> {
+class LocalStorage<Value> implements SyncStorageAdapter<Value> {
 	private options: LocalStorageOptions<Value>;
 
 	private key: string;
@@ -16,7 +16,6 @@ class LocalStorage<Value> extends SyncStorageAdapter<Value> {
 	private deserialize = $derived.by(() => this.options.deserialize ?? JSON.parse);
 
 	constructor(key: string, options: LocalStorageOptions<Value> = {}) {
-		super();
 		this.key = key;
 		this.options = options;
 

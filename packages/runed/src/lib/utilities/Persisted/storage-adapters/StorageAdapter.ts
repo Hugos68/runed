@@ -1,15 +1,15 @@
-abstract class SyncStorageAdapter<T> {
-	abstract get(): T | null;
-	abstract set(value: T): void;
-	abstract has(): boolean;
-	abstract remove(): boolean;
+interface SyncStorageAdapter<T> {
+	get: () => T | null;
+	set: (value: T) => void;
+	has: () => boolean;
+	remove: () => boolean;
 }
 
-abstract class AsyncStorageAdapter<T> {
-	abstract get(): Promise<T | null>;
-	abstract set(value: T): Promise<void>;
-	abstract has(): Promise<boolean>;
-	abstract remove(): Promise<boolean>;
+interface AsyncStorageAdapter<T> {
+	get: () => Promise<T | null>;
+	set: (value: T) => Promise<void>;
+	has: () => Promise<boolean>;
+	remove: () => Promise<boolean>;
 }
 
-export { SyncStorageAdapter, AsyncStorageAdapter };
+export type { SyncStorageAdapter, AsyncStorageAdapter };

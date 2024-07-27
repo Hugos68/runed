@@ -1,12 +1,11 @@
-import { SyncStorageAdapter } from "./StorageAdapter.js";
+import type { SyncStorageAdapter } from "./StorageAdapter.js";
 import { browser } from "$lib/internal/utils/browser.js";
-
 interface SessionStorageOptions<Value> {
 	serialize?: (value: Value) => string;
 	deserialize?: (value: string) => Value;
 }
 
-class SessionStorage<Value> extends SyncStorageAdapter<Value> {
+class SessionStorage<Value> implements SyncStorageAdapter<Value> {
 	private options: SessionStorageOptions<Value>;
 
 	private key: string;
@@ -14,7 +13,6 @@ class SessionStorage<Value> extends SyncStorageAdapter<Value> {
 	private deserialize = $derived.by(() => this.options.deserialize ?? JSON.parse);
 
 	constructor(key: string, options: SessionStorageOptions<Value> = {}) {
-		super();
 		this.key = key;
 		this.options = options;
 	}
